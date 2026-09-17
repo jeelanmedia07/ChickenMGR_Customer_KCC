@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChickenMGR - Customer Setup</title>
+    <meta name="theme-color" content="#065f46">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4fbf7; margin: 0; display: flex; align-items: center; justify-content: center; height: 100vh; padding: 16px; }
+        
+        .setup-card { background: white; padding: 24px; border-radius: 18px; width: 100%; max-width: 360px; box-shadow: 0 10px 25px rgba(6,95,70,0.1); border: 1px solid #d1fae5; text-align: center; }
+        .setup-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid #34d399; margin-bottom: 12px; }
+        .setup-card h2 { margin: 0 0 6px 0; font-size: 20px; color: #065f46; font-weight: 700; }
+        .setup-card p { margin: 0 0 20px 0; font-size: 12.5px; color: #64748b; }
+
+        .input-group { text-align: left; margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 11.5px; font-weight: 700; color: #334155; margin-bottom: 5px; }
+        .input-group input { width: 100%; padding: 11px; font-size: 13px; border: 1px solid #cbd5e1; border-radius: 10px; background: #f8fafc; outline: none; color: #1e293b; }
+        .input-group input:focus { border-color: #059669; background: #fff; }
+
+        .save-btn { background: #059669; color: white; border: none; width: 100%; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(5,150,105,0.25); margin-top: 6px; }
+        .save-btn:active { background: #047857; }
+    </style>
+</head>
+<body>
+
+    <div class="setup-card">
+        <img src="Logo.png" alt="Logo">
+        <h2>Chicken MGR</h2>
+        <p>Apna naam aur mobile number ek baar darj karein taaki bar-bar daalna na pade.</p>
+        
+        <div class="input-group">
+            <label>Aapka Naam (Customer Name)</label>
+            <input type="text" id="setupName" placeholder=>
+        </div>
+
+        <div class="input-group">
+            <label>Mobile Number (10 Digits)</label>
+            <input type="tel" id="setupPhone" maxlength="10" >
+        </div>
+
+        <button class="save-btn" onclick="saveCustomerSetup()">Save & Start Ordering 🚀</button>
+    </div>
+
+   <script>
+        function saveCustomerSetup() {
+            let name = document.getElementById('setupName').value.trim();
+            let phone = document.getElementById('setupPhone').value.trim();
+
+            if (!name || phone.length < 10) {
+                alert("Kripya apna sahi naam aur 10 ankon ka mobile number bharein!");
+                return;
+            }
+
+            // Permanent save in localStorage
+            localStorage.setItem('kcc_customer_name', name);
+            localStorage.setItem('kcc_customer_phone', phone);
+
+            // Redirect to customer_order.html
+            window.location.href = 'customer_order.html';
+        }
+    </script>
+</body>
+</html>

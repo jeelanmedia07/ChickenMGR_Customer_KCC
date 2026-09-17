@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChickenMGR - Order Fresh Chicken</title>
+    <meta name="theme-color" content="#065f46">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="Logo.jpg">
+    <style>
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4fbf7; margin: 0; padding-bottom: 75px; }
+        header { background: #065f46; color: white; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(6,95,70,0.15); }
+        .header-brand { display: flex; align-items: center; gap: 10px; }
+        .header-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #34d399; }
+        .header-brand h2 { margin: 0; font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px; }
+        .header-brand p { margin: 2px 0 0 0; font-size: 10.5px; color: #a7f3d0; }
+        .header-actions { display: flex; align-items: center; gap: 5px; }
+        .header-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+        .container { padding: 14px; max-width: 480px; margin: auto; }
+        #singleStatusBar { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 12px; margin-bottom: 14px; font-size: 12px; font-weight: 600; border: 1px solid #d1fae5; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        .banner-box { background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 14px; border: 1px solid #d1fae5; text-align: center; position: relative; }
+        .banner-box video { width: 100%; max-height: 180px; object-fit: cover; display: block; }
+        .mute-toggle-btn { position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; border: 1px solid rgba(255, 255, 255, 0.4); padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(4px); z-index: 10; }
+        .banner-text { padding: 12px; }
+        .banner-text h3 { margin: 0 0 4px 0; color: #065f46; font-size: 15px; font-weight: 700; }
+        .banner-text p { margin: 0; color: #64748b; font-size: 12px; }
+        .section-title { font-size: 14px; font-weight: 700; color: #1e293b; margin: 16px 0 10px 2px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .product-card { background: #ffffff; border-radius: 14px; padding: 10px; text-align: center; border: 1px solid #e2e8f0; box-shadow: 0 2px 6px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
+        
+        .product-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; }
+        .product-card h4 { margin: 6px 0 2px 0; font-size: 13px; color: #1e293b; font-weight: 700; }
+        .product-card .price { font-size: 13px; color: #047857; font-weight: 800; margin-bottom: 6px; background: #ecfdf5; padding: 3px 6px; border-radius: 6px; display: inline-block; width: 100%; border: 1px dashed #34d399; }
+        
+        .product-controls { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; text-align: left; background: #f8fafc; padding: 8px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        
+        /* Tick Option Tabs */
+        .mode-tabs { display: flex; gap: 4px; background: #e2e8f0; padding: 2px; border-radius: 6px; }
+        .mode-tab { flex: 1; text-align: center; font-size: 10px; font-weight: 700; padding: 4px 2px; border-radius: 4px; cursor: pointer; color: #475569; transition: all 0.2s; }
+        .mode-tab.active { background: #059669; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        .product-controls input { width: 100%; padding: 6px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 7px; background: #ffffff; color: #334155; outline: none; }
+        .add-btn { background: #059669; color: white; border: none; padding: 8px; border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer; width: 100%; box-shadow: 0 2px 6px rgba(5,150,105,0.2); }
+
+        .coins-widget { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde68a; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(217,119,6,0.06); }
+        .coins-info h4 { margin: 0 0 2px 0; font-size: 13px; color: #92400e; font-weight: 700; }
+        .coins-info p { margin: 0; font-size: 11px; color: #b45309; }
+        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 12px 16px; box-shadow: -4px 15px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #d1fae5; z-index: 999; }
+        .cart-info { font-size: 13.5px; color: #1e293b; font-weight: 700; }
+        .checkout-btn { background: #d97706; color: white; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 12.5px; cursor: pointer; box-shadow: 0 2px 8px rgba(217,119,6,0.3); }
+        
+        #complaintModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
+    </style>
+</head>
+<body onload="checkCustomerSetup()">
+
+    <header>
+        <div class="header-brand">
+            <img src="Logo.png" alt="Logo">
+            <div>
+                <h2>ChickenMGR</h2>
+                <p id="headerCustGreeting">Dashboard</p>
+            </div>
+        </div>
+       <div class="header-actions">
+            <button onclick="openComplaintModal()" class="header-btn" style="background: #dc2626; border-color: #f87171;">💬 Feedback</button>
+            <button id="headerShopStatusBtn" class="header-btn" style="background: #10b981; border-color: #34d399;">🟢 Open</button>
+            <button onclick="openMyOrders()" class="header-btn" style="background: #ffffff; border-color: #fbbf24; color: #1e293b; font-size: 14px; padding: 4px 8px;" title="My Orders & Tokens">🛒</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div id="singleStatusBar">
+            <span id="statusDateText">📅 Loading...</span>
+            <span id="statusMsgBadge" style="padding: 4px 10px; border-radius: 6px; font-size: 11px;">--</span>
+        </div>
+
+        <div class="coins-widget">
+            <div class="coins-info">
+                <h4 id="coinsTitleText">🪙 <span id="customerCoinsCount">0</span> Loyalty Coins</h4>
+                <p id="coinsSubStr">Half kg se zyada par coins milte hain! (>0.5kg = 2 coins, 1kg+ = 4 coins). 120+ coins par 1kg free!</p>
+            </div>
+        </div>
+
+        <div class="banner-box">
+            <button id="muteToggleBtn" class="mute-toggle-btn" onclick="toggleVideoMute()">🔇 Unmute</button>
+           <video id="promoVideo" src="https://archive.org/download/kadir-chicken-center-kcc/Video.mp4" autoplay loop muted playsinline></video>
+            <div class="banner-text">
+                <h3>Fresh Raw Chicken & Ready Items</h3>
+                <p>100% Fresh, Clean & Hygienic Cut Delivered to You</p>
+            </div>
+        </div>
+
+        <div class="section-title">
+            <span>Fresh Chicken Categories</span>
+            <span style="font-size: 11px; color: #059669; font-weight: 600;">Home Delivery Available (+₹20)</span>
+        </div>
+
+        <div class="products-grid">
+            <!-- 1. Fresh Chicken -->
+            <div class="product-card">
+                <img src="Fresh Chicken.jpg" alt="Curry Cut">
+                <div>
+                    <h4>Fresh Chicken</h4>
+                    <div class="price" id="price_curry">₹240 / kg</div>
+                </div>
+                <div class="product-controls">
+                    <div class="mode-tabs">
+                        <div id="tab_kg_curry" class="mode-tab active" onclick="switchOrderMode('curry', 'kg')">⚖️ Vajan (Kg) ✓</div>
+                        <div id="tab_price_curry" class="mode-tab" onclick="switchOrderMode('curry', 'price')">💵 Rupees (₹)</div>
+                    </div>
+                    
+                    <div id="box_kg_curry" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" step="0.05" id="kgInput_curry" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('curry', 240)" style="width: 65%;">
+                        <span id="autoPrice_curry" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
+                    </div>
+
+                    <div id="box_price_curry" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" id="priceInput_curry" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('curry', 240)" style="width: 60%;">
+                        <span id="autoWeight_curry" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addUniversalToCart('Fresh Chicken', 'rate_curry', 'curry', 240)">Add to Cart</button>
+            </div>
+
+            <!-- 2. Chicken Leg Piece -->
+            <div class="product-card">
+                <img src="leg piece.jpg" alt="Leg Piece">
+                <div>
+                    <h4>Chicken Leg Piece</h4>
+                    <div class="price" id="price_leg">₹280 / kg</div>
+                </div>
+                <div class="product-controls">
+                    <div class="mode-tabs">
+                        <div id="tab_kg_leg" class="mode-tab active" onclick="switchOrderMode('leg', 'kg')">⚖️ Vajan (Kg) ✓</div>
+                        <div id="tab_price_leg" class="mode-tab" onclick="switchOrderMode('leg', 'price')">💵 Rupees (₹)</div>
+                    </div>
+                    
+                    <div id="box_kg_leg" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" step="0.05" id="kgInput_leg" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('leg', 280)" style="width: 65%;">
+                        <span id="autoPrice_leg" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
+                    </div>
+
+                    <div id="box_price_leg" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" id="priceInput_leg" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('leg', 280)" style="width: 60%;">
+                        <span id="autoWeight_leg" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addUniversalToCart('Chicken Leg Piece', 'rate_leg', 'leg', 280)">Add to Cart</button>
+            </div>
+
+            <!-- 3. Chicken Boneless -->
+            <div class="product-card">
+                <img src="Boneless Chicken.png" alt="Boneless">
+                <div>
+                    <h4>Chicken Boneless</h4>
+                    <div class="price" id="price_boneless">₹340 / kg</div>
+                </div>
+                <div class="product-controls">
+                    <div class="mode-tabs">
+                        <div id="tab_kg_boneless" class="mode-tab active" onclick="switchOrderMode('boneless', 'kg')">⚖️ Vajan (Kg) ✓</div>
+                        <div id="tab_price_boneless" class="mode-tab" onclick="switchOrderMode('boneless', 'price')">💵 Rupees (₹)</div>
+                    </div>
+                    
+                    <div id="box_kg_boneless" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" step="0.05" id="kgInput_boneless" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('boneless', 340)" style="width: 65%;">
+                        <span id="autoPrice_boneless" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
+                    </div>
+
+                    <div id="box_price_boneless" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" id="priceInput_boneless" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('boneless', 340)" style="width: 60%;">
+                        <span id="autoWeight_boneless" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addUniversalToCart('Chicken Boneless', 'rate_boneless', 'boneless', 340)">Add to Cart</button>
+            </div>
+
+            <!-- 4. Liver / Kaleji -->
+            <div class="product-card">
+                <img src="Kalezi.png" alt="Liver">
+                <div>
+                    <h4>Liver / Kaleji</h4>
+                    <div class="price" id="price_liver">₹200 / kg</div>
+                </div>
+                <div class="product-controls">
+                    <div class="mode-tabs">
+                        <div id="tab_kg_liver" class="mode-tab active" onclick="switchOrderMode('liver', 'kg')">⚖️ Vajan (Kg) ✓</div>
+                        <div id="tab_price_liver" class="mode-tab" onclick="switchOrderMode('liver', 'price')">💵 Rupees (₹)</div>
+                    </div>
+                    
+                    <div id="box_kg_liver" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" step="0.05" id="kgInput_liver" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('liver', 200)" style="width: 65%;">
+                        <span id="autoPrice_liver" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
+                    </div>
+
+                    <div id="box_price_liver" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
+                        <input type="number" id="priceInput_liver" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('liver', 200)" style="width: 60%;">
+                        <span id="autoWeight_liver" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
+                    </div>
+                </div>
+                <button class="add-btn" onclick="addUniversalToCart('Liver / Kaleji', 'rate_liver', 'liver', 200)">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Modal -->
+    <div id="complaintModal">
+        <div style="background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center;">
+            <h3 style="margin-top: 0; color: #dc2626; font-size: 17px; font-weight: 700;">💬 Shikayat / Feedback</h3>
+            <p style="font-size: 11.5px; color: #64748b; margin-bottom: 12px;">Apni shikayat ya sujhaav likhein, seedha WhatsApp (9096214201) par jayega:</p>
+            <textarea id="customerComplaintText" placeholder="Apni baat yahan likhein..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; height: 80px; outline: none; background: #fef2f2; resize: none; margin-bottom: 14px; color: #1e293b;"></textarea>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="sendComplaintWhatsApp()" style="flex: 1; background: #dc2626; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Send WhatsApp</button>
+                <button onclick="closeComplaintModal()" style="background: #e2e8f0; color: #475569; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-bar" id="cartBar" style="display: none;">
+        <div class="cart-info" id="cartSummary">0 Items | ₹0</div>
+        <button class="checkout-btn" onclick="openCheckoutModal()">Place Priority Order 🚀</button>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center;">
+            <div id="formSection">
+                <h3 style="margin-top: 0; color: #1e293b; font-size: 17px; font-weight: 700;">Order Type & Details</h3>
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px; border-radius: 8px; margin-bottom: 12px; font-size: 11.5px; color: #166534; font-weight: 600; text-align: left;">
+                    👤 <span id="displaySavedName"></span> (<span id="displaySavedPhone"></span>) 
+                    <a href="setup.html" style="float: right; color: #0284c7; text-decoration: none; font-size: 10.5px;">Change</a>
+                </div>
+
+                <div id="checkoutRedeemContainer" style="display: none; background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 1.5px dashed #f59e0b; padding: 10px; border-radius: 10px; margin-bottom: 12px; text-align: left;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 11.5px; font-weight: 700; color: #92400e;">
+                        <input type="checkbox" id="redeemCoinCheckbox" onchange="recalculateCheckoutTotal()" style="width: 16px; height: 16px; accent-color: #d97706;">
+                        <span>🎁 Redeem 1kg Free (<span id="modalCoinsDisplay">0</span> Coins) - Deduct 1kg price!</span>
+                    </label>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: left; font-size: 12px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px; color: #64748b;">
+                        <span>Subtotal:</span>
+                        <span id="modalSubtotalText">₹0</span>
+                    </div>
+                    <div id="modalDeliveryRow" style="display: none; justify-content: space-between; margin-bottom: 4px; color: #0284c7; font-weight: 600;">
+                        <span>Home Delivery Charge:</span>
+                        <span>+₹20</span>
+                    </div>
+                    <div id="modalDiscountRow" style="display: none; justify-content: space-between; margin-bottom: 4px; color: #d97706; font-weight: 600;">
+                        <span>Coin Discount (1kg Free):</span>
+                        <span id="modalDiscountText">-₹0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; border-top: 1px dashed #cbd5e1; padding-top: 4px; font-weight: 700; color: #059669; font-size: 13.5px;">
+                        <span>Net Payable:</span>
+                        <span id="modalFinalTotalText">₹0</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 10px; text-align: left;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">How do you want your order?</label>
+                    <select id="orderType" onchange="toggleAddressBox()" style="width: 100%; padding: 9px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; outline: none;">
+                        <option value="Pickup">🏪 Store Pickup (Self)</option>
+                        <option value="Delivery">🛵 Home Delivery (+₹20)</option>
+                    </select>
+                </div>
+
+                <textarea id="custAddress" placeholder="Delivery Address / Area in Baramati" style="width: 100%; padding: 9px; margin-bottom: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; height: 50px; display: none; background: #f8fafc; outline: none; resize: none;"></textarea>
+                
+                <div style="margin-bottom: 14px; text-align: left;">
+                    <label style="font-size: 11.5px; font-weight: 700; color: #475569; display: block; margin-bottom: 4px;">Order Instructions / Note (Optional):</label>
+                    <input type="text" id="checkoutOrderNote" placeholder="Jaise: Kalezi mat dalo, chote piece rakho..." style="width: 100%; padding: 9px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 8px; background: #f8fafc; outline: none; color: #1e293b;">
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="generateTokenOrder()" style="flex: 1; background: #059669; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Generate Token</button>
+                    <button onclick="closeCheckoutModal()" style="background: #e2e8f0; color: #475569; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Cancel</button>
+                </div>
+            </div>
+
+            <div id="tokenSuccessSection" style="display: none;">
+                <div style="font-size: 38px; margin-bottom: 6px;">🎟️</div>
+                <h3 style="margin: 0 0 4px 0; color: #1e293b; font-size: 17px; font-weight: 700;">Order Placed Successfully!</h3>
+                <p style="font-size: 11.5px; color: #64748b; margin-bottom: 12px;">Show this token at the shop to collect instantly:</p>
+                <div id="tokenBoxContainer" style="background: #f8fafc; border: 2px dashed #059669; padding: 14px; border-radius: 10px; margin-bottom: 14px;">
+                    <span style="font-size: 11px; color: #64748b; font-weight: 600; display: block;">YOUR TOKEN NUMBER</span>
+                    <h2 id="displayTokenNumber" style="margin: 6px 0; color: #059669; font-size: 26px; letter-spacing: 1px;">#MB-101</h2>
+                    <p id="displayCustDetails" style="margin: 0; font-size: 11.5px; color: #1e293b; font-weight: 700;"></p>
+                </div>
+                <button onclick="finishAndReset()" style="width: 100%; background: #059669; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Done / Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- My Orders Modal -->
+    <div id="myOrdersModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.15);">
+            <h3 style="margin-top: 0; color: #1e293b; font-size: 17px; font-weight: 700;">Your Active Tokens & Orders</h3>
+            <div id="ordersListContainer" style="max-height: 250px; overflow-y: auto; text-align: left; margin: 10px 0;"></div>
+            <button onclick="closeMyOrders()" style="background: #065f46; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygP1DJtTufg5LUGYiribIPsKQR_wIzFnWYTyFKyvY1MAKcu5AMFuE7ASkmmImi-oqggA/exec";
+        let cart = [];
+        let liveRatesMap = { rate_curry: 240, rate_leg: 280, rate_boneless: 340, rate_liver: 200 };
+        let currentShopOpenStatus = "true";
+        let activeModesMap = { curry: 'kg', leg: 'kg', boneless: 'kg', liver: 'kg' };
+
+        setInterval(() => {
+            fetchCloudSettingsAndRates();
+            checkOrderStatusAndSyncCoins();
+        }, 6000);
+
+        function checkCustomerSetup() {
+            let savedName = localStorage.getItem('kcc_customer_name');
+            let savedPhone = localStorage.getItem('kcc_customer_phone');
+
+            if (!savedName || !savedPhone) {
+                window.location.href = 'setup.html';
+                return;
+            }
+
+            document.getElementById('headerCustGreeting').innerText = `Hi, ${savedName}`;
+            document.getElementById('displaySavedName').innerText = savedName;
+            document.getElementById('displaySavedPhone').innerText = savedPhone;
+
+            fetchCloudSettingsAndRates();
+            updateCoinsUI();
+            checkOrderStatusAndSyncCoins();
+        }
+
+        function fetchCloudSettingsAndRates() {
+            fetch(SCRIPT_URL + "?action=getSettings")
+            .then(res => res.json())
+            .then(settings => {
+                currentShopOpenStatus = settings.shopOpen;
+                
+                if (settings.rates) {
+                    liveRatesMap.rate_curry = parseFloat(settings.rates.curry) || 240;
+                    liveRatesMap.rate_leg = parseFloat(settings.rates.leg) || 280;
+                    liveRatesMap.rate_boneless = parseFloat(settings.rates.boneless) || 340;
+                    liveRatesMap.rate_liver = parseFloat(settings.rates.liver) || 200;
+                }
+
+                document.getElementById('price_curry').innerText = `₹${liveRatesMap.rate_curry} / kg`;
+                document.getElementById('price_leg').innerText = `₹${liveRatesMap.rate_leg} / kg`;
+                document.getElementById('price_boneless').innerText = `₹${liveRatesMap.rate_boneless} / kg`;
+                document.getElementById('price_liver').innerText = `₹${liveRatesMap.rate_liver} / kg`;
+
+                initAppFeatures(currentShopOpenStatus);
+            }).catch(err => {
+                console.log("Using default fallback rates", err);
+                initAppFeatures("true");
+            });
+        }
+
+        function checkOrderStatusAndSyncCoins() {
+            let phone = localStorage.getItem('kcc_customer_phone');
+            if (!phone) return;
+
+            let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
+            if (activeOrders.length === 0) return;
+
+            fetch(SCRIPT_URL)
+            .then(res => res.json())
+            .then(serverOrders => {
+                if (!Array.isArray(serverOrders)) return;
+
+                let updated = false;
+                activeOrders.forEach(order => {
+                    if (order.phone === phone && order.status !== "Completed") {
+                        let match = serverOrders.find(s => s.Token === order.token || s.token === order.token);
+                        if (match && (match.Status === "Completed" || match.status === "Completed")) {
+                            order.status = "Completed";
+                            updated = true;
+
+                            let earnedCoins = calculateCoinsForOrder(order.itemsObj || order.items);
+                            if (earnedCoins > 0) {
+                                let phoneKey = 'kcc_coins_' + phone;
+                                let coinsData = JSON.parse(localStorage.getItem(phoneKey) || '{"coins": 0, "timestamp": ' + new Date().getTime() + '}');
+                                coinsData.coins = (coinsData.coins || 0) + earnedCoins;
+                                coinsData.timestamp = new Date().getTime();
+                                localStorage.setItem(phoneKey, JSON.stringify(coinsData));
+                                updateCoinsUI();
+                            }
+                        }
+                    }
+                });
+
+                if (updated) {
+                    localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
+                }
+            }).catch(err => console.log("Sync error", err));
+        }
+
+        function calculateCoinsForOrder(items) {
+            let totalCoins = 0;
+            if (typeof items === 'string') {
+                let matches = items.match(/([\d.]+)(kg|g)/gi);
+                if (matches) {
+                    matches.forEach(m => {
+                        let val = parseFloat(m);
+                        if (m.includes('g') && !m.includes('kg')) {
+                            val = val / 1000;
+                        }
+                        if (val > 0.5 && val <= 1) {
+                            totalCoins += 2;
+                        } else if (val > 1) {
+                            totalCoins += 4 * Math.floor(val);
+                        }
+                    });
+                } else {
+                    totalCoins = 4;
+                }
+            }
+            return totalCoins > 0 ? totalCoins : 4;
+        }
+
+        function initAppFeatures(shopOpen) {
+            let statusBtn = document.getElementById('headerShopStatusBtn');
+            let cartBar = document.getElementById('cartBar');
+            let statusBadge = document.getElementById('statusMsgBadge');
+            
+            if (shopOpen === "false" || shopOpen === false) {
+                statusBtn.style.background = "#ef4444";
+                statusBtn.innerText = "🔴 Closed";
+                if (cartBar) cartBar.style.display = 'none';
+                
+                statusBadge.innerText = "🔴 Shop Closed (Ordering Paused)";
+                statusBadge.style.background = "#fee2e2";
+                statusBadge.style.color = "#991b1b";
+            } else {
+                statusBtn.style.background = "#10b981";
+                statusBtn.innerText = "🟢 Open";
+                
+                statusBadge.innerText = "🟢 Khula Hai (Fresh Stock Ready)";
+                statusBadge.style.background = "#bbf7d0";
+                statusBadge.style.color = "#166534";
+            }
+            
+            let today = new Date();
+            let dateStr = today.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+            document.getElementById('statusDateText').innerText = `📅 ${dateStr}`;
+        }
+
+        function updateCoinsUI() {
+            let phone = localStorage.getItem('kcc_customer_phone');
+            let coinsData = JSON.parse(localStorage.getItem('kcc_coins_' + phone) || '{"coins": 0, "timestamp": ' + new Date().getTime() + '}');
+            document.getElementById('customerCoinsCount').innerText = coinsData.coins || 0;
+        }
+
+        function toggleVideoMute() {
+            let video = document.getElementById('promoVideo');
+            let btn = document.getElementById('muteToggleBtn');
+            if (video.muted) {
+                video.muted = false;
+                btn.innerHTML = "🔊 Mute";
+            } else {
+                video.muted = true;
+                btn.innerHTML = "🔇 Unmute";
+            }
+        }
+
+        function switchOrderMode(key, mode) {
+            activeModesMap[key] = mode;
+            let kgTab = document.getElementById('tab_kg_' + key);
+            let priceTab = document.getElementById('tab_price_' + key);
+            let kgBox = document.getElementById('box_kg_' + key);
+            let priceBox = document.getElementById('box_price_' + key);
+
+            if (mode === 'kg') {
+                kgTab.classList.add('active');
+                kgTab.innerHTML = "⚖️ Vajan (Kg) ✓";
+                priceTab.classList.remove('active');
+                priceTab.innerHTML = "💵 Rupees (₹)";
+
+                kgBox.style.display = 'flex';
+                priceBox.style.display = 'none';
+            } else {
+                priceTab.classList.add('active');
+                priceTab.innerHTML = "💵 Rupees (₹) ✓";
+                kgTab.classList.remove('active');
+                kgTab.innerHTML = "⚖️ Vajan (Kg)";
+
+                kgBox.style.display = 'none';
+                priceBox.style.display = 'flex';
+            }
+        }
+
+        function calculatePriceByWeight(itemKey, defaultRate) {
+            let rateKey = 'rate_' + itemKey;
+            let currentRate = liveRatesMap[rateKey] || defaultRate;
+            let inputField = document.getElementById('kgInput_' + itemKey);
+            let priceSpan = document.getElementById('autoPrice_' + itemKey);
+            
+            let enteredKg = parseFloat(inputField.value) || 0;
+
+            if (enteredKg > 0 && currentRate > 0) {
+                let calculatedPrice = Math.round(enteredKg * currentRate);
+                priceSpan.innerText = "₹" + calculatedPrice;
+                inputField.setAttribute('data-calc-price', calculatedPrice);
+            } else {
+                priceSpan.innerText = "₹0";
+                inputField.setAttribute('data-calc-price', "0");
+            }
+        }
+
+        function calculateWeightByPrice(itemKey, defaultRate) {
+            let rateKey = 'rate_' + itemKey;
+            let currentRate = liveRatesMap[rateKey] || defaultRate;
+            let inputField = document.getElementById('priceInput_' + itemKey);
+            let weightSpan = document.getElementById('autoWeight_' + itemKey);
+            
+            let enteredPrice = parseFloat(inputField.value) || 0;
+
+            if (enteredPrice > 0 && currentRate > 0) {
+                let weightKg = enteredPrice / currentRate;
+                if (weightKg < 1) {
+                    let grams = Math.round(weightKg * 1000);
+                    weightSpan.innerText = grams + "g";
+                } else {
+                    weightSpan.innerText = weightKg.toFixed(2) + "kg";
+                }
+                inputField.setAttribute('data-calc-weight', weightKg.toFixed(3));
+            } else {
+                weightSpan.innerText = "0g";
+                inputField.setAttribute('data-calc-weight', "0");
+            }
+        }
+
+        function addUniversalToCart(name, rateKey, keySuffix, defaultRate) {
+            let currentRate = liveRatesMap[rateKey] || defaultRate;
+            let mode = activeModesMap[keySuffix] || 'kg';
+            
+            let finalPrice = 0;
+            let finalQty = 0;
+
+            if (mode === 'kg') {
+                let inputField = document.getElementById('kgInput_' + keySuffix);
+                let enteredKg = parseFloat(inputField.value) || 0;
+
+                if (enteredKg <= 0) {
+                    alert("Kripya sahi vajan (Kg) darj karein! (Jaise: 0.250, 0.5, 1)");
+                    return;
+                }
+                finalQty = enteredKg;
+                finalPrice = Math.round(finalQty * currentRate);
+
+                inputField.value = "";
+                document.getElementById('autoPrice_' + keySuffix).innerText = "₹0";
+            } else {
+                let inputField = document.getElementById('priceInput_' + keySuffix);
+                let enteredPrice = parseFloat(inputField.value) || 0;
+                let calcWeight = parseFloat(inputField.getAttribute('data-calc-weight')) || 0;
+
+                if (enteredPrice <= 0 || calcWeight <= 0) {
+                    alert("Kripya sahi amount (₹) darj karein!");
+                    return;
+                }
+                finalPrice = enteredPrice;
+                finalQty = parseFloat(calcWeight.toFixed(3));
+                
+                inputField.value = "";
+                document.getElementById('autoWeight_' + keySuffix).innerText = "0g";
+                inputField.setAttribute('data-calc-weight', "0");
+            }
+
+            cart.push({
+                name: name,
+                price: finalPrice,
+                qty: finalQty,
+                rate: currentRate,
+                isPriceMode: (mode === 'price')
+            });
+
+            updateCartUI();
+            alert(`${name} (${finalQty < 1 ? Math.round(finalQty*1000)+'g' : finalQty+'kg'} - ₹${finalPrice}) cart me jud gaya! 🚀`);
+        }
+
+        function openComplaintModal() {
+            document.getElementById('customerComplaintText').value = "";
+            document.getElementById('complaintModal').style.display = 'flex';
+        }
+
+        function closeComplaintModal() {
+            document.getElementById('complaintModal').style.display = 'none';
+        }
+
+        function sendComplaintWhatsApp() {
+            let complaintText = document.getElementById('customerComplaintText').value.trim();
+            let savedName = localStorage.getItem('kcc_customer_name') || 'Customer';
+            let savedPhone = localStorage.getItem('kcc_customer_phone') || '';
+
+            if (!complaintText) {
+                alert("Kripya pehle apni shikayat ya sujhaav box me likhein!");
+                return;
+            }
+
+            let message = `🚨 *ChickenMGR Complaint / Feedback* 🚨\n\n` +
+                          `👤 *Name:* ${savedName}\n` +
+                          `📞 *Phone:* ${savedPhone}\n\n` +
+                          `📝 *Message:* ${complaintText}`;
+
+            let encodedMessage = encodeURIComponent(message);
+            let whatsappUrl = `https://wa.me/919096214201?text=${encodedMessage}`;
+            
+            window.open(whatsappUrl, '_blank');
+            closeComplaintModal();
+        }
+
+        function updateCartUI() {
+            let totalItems = cart.length;
+            let totalPrice = cart.reduce((sum, i) => sum + i.price, 0);
+            let cartBar = document.getElementById('cartBar');
+            if (totalItems > 0 && currentShopOpenStatus !== "false") {
+                cartBar.style.display = 'flex';
+                document.getElementById('cartSummary').innerText = `${totalItems} Items | ₹${Math.round(totalPrice)}`;
+            } else {
+                cartBar.style.display = 'none';
+            }
+        }
+
+        function openCheckoutModal() {
+            if (currentShopOpenStatus === "false") {
+                alert("Sorry, shop is currently closed. You cannot place orders right now!");
+                return;
+            }
+
+            let phone = localStorage.getItem('kcc_customer_phone');
+            let coinsData = JSON.parse(localStorage.getItem('kcc_coins_' + phone) || '{"coins": 0, "timestamp": ' + new Date().getTime() + '}');
+            let redeemContainer = document.getElementById('checkoutRedeemContainer');
+
+            if (coinsData.coins >= 120) {
+                redeemContainer.style.display = 'block';
+                document.getElementById('modalCoinsDisplay').innerText = coinsData.coins;
+                document.getElementById('redeemCoinCheckbox').checked = false;
+            } else {
+                redeemContainer.style.display = 'none';
+            }
+
+            document.getElementById('checkoutOrderNote').value = "";
+            recalculateCheckoutTotal();
+            document.getElementById('formSection').style.display = 'block';
+            document.getElementById('tokenSuccessSection').style.display = 'none';
+            document.getElementById('checkoutModal').style.display = 'flex';
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkoutModal').style.display = 'none';
+        }
+
+        function toggleAddressBox() {
+            let type = document.getElementById('orderType').value;
+            let addressBox = document.getElementById('custAddress');
+            addressBox.style.display = (type === 'Delivery') ? 'block' : 'none';
+            recalculateCheckoutTotal();
+        }
+
+        function recalculateCheckoutTotal() {
+            let subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            let orderType = document.getElementById('orderType').value;
+            let deliveryFee = (orderType === 'Delivery') ? 20 : 0;
+            
+            let isRedeeming = document.getElementById('redeemCoinCheckbox').checked;
+            let discount = 0;
+
+            if (isRedeeming && cart.length > 0) {
+                let maxPriceItem = cart.reduce((max, i) => i.price > max.price ? i : max, cart[0]);
+                discount = maxPriceItem.price; 
+            }
+
+            let finalTotal = Math.max(0, subtotal + deliveryFee - discount);
+
+            document.getElementById('modalSubtotalText').innerText = `₹${Math.round(subtotal)}`;
+            
+            if (deliveryFee > 0) {
+                document.getElementById('modalDeliveryRow').style.display = 'flex';
+            } else {
+                document.getElementById('modalDeliveryRow').style.display = 'none';
+            }
+
+            if (isRedeeming && discount > 0) {
+                document.getElementById('modalDiscountRow').style.display = 'flex';
+                document.getElementById('modalDiscountText').innerText = `-₹${Math.round(discount)}`;
+            } else {
+                document.getElementById('modalDiscountRow').style.display = 'none';
+            }
+            document.getElementById('modalFinalTotalText').innerText = `₹${Math.round(finalTotal)}`;
+        }
+
+        function generateTokenOrder() {
+            let btn = document.querySelector('#formSection button[onclick="generateTokenOrder()"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.innerText = "Placing Order... ⏳";
+            }
+
+            let name = localStorage.getItem('kcc_customer_name');
+            let phone = localStorage.getItem('kcc_customer_phone');
+            let orderType = document.getElementById('orderType').value;
+            let address = document.getElementById('custAddress').value.trim();
+            let orderNote = document.getElementById('checkoutOrderNote').value.trim();
+            let isRedeeming = document.getElementById('redeemCoinCheckbox').checked;
+
+            if (orderType === 'Delivery' && !address) {
+                alert("Please enter delivery address!");
+                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
+                return;
+            }
+
+            let phoneKey = 'kcc_coins_' + phone;
+            let coinsData = JSON.parse(localStorage.getItem(phoneKey) || '{"coins": 0, "timestamp": ' + new Date().getTime() + '}');
+
+            if (isRedeeming && coinsData.coins < 120) {
+                alert("Invalid request: Insufficient coins for redemption!");
+                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
+                return;
+            }
+
+            let randomToken = "MB-" + Math.floor(100 + Math.random() * 900);
+            let subtotal = cart.reduce((sum, i) => sum + i.price, 0);
+            let deliveryFee = (orderType === 'Delivery') ? 20 : 0;
+            let discount = 0;
+            
+            if (isRedeeming && cart.length > 0) {
+                let maxPriceItem = cart.reduce((max, i) => i.price > max.price ? i : max, cart[0]);
+                discount = maxPriceItem.price;
+            }
+            let finalPayable = Math.max(0, subtotal + deliveryFee - discount);
+            
+            let itemsString = cart.map(i => `${i.name} (${i.qty < 1 ? Math.round(i.qty*1000)+'g' : i.qty+'kg'}) - ₹${i.price}`).join(', ');
+            if (deliveryFee > 0) {
+                itemsString += ` + Home Delivery (₹20)`;
+            }
+            let orderDetails = itemsString + (orderNote ? ` | 📝 Note: ${orderNote}` : '');
+
+            let specialBadgeText = "";
+            if (isRedeeming) {
+                coinsData.coins = 0; 
+                coinsData.timestamp = new Date().getTime();
+                localStorage.setItem(phoneKey, JSON.stringify(coinsData));
+                specialBadgeText = `👑 1KG FREE REWARD APPLIED (-₹${Math.round(discount)})`;
+            } else {
+                specialBadgeText = `Pending Completion for Coins`;
+            }
+
+            let now = new Date();
+            let newOrder = {
+                action: "addOrder",
+                token: randomToken,
+                customerName: name,
+                phone: phone,
+                orderType: orderType,
+                address: address || 'Store Pickup',
+                items: orderDetails,
+                totalAmount: Math.round(finalPayable),
+                time: now.toLocaleTimeString(),
+                status: "Pending",
+                badgeText: specialBadgeText
+            };
+
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newOrder)
+            }).then(() => {
+                let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
+                newOrder.status = "Pending";
+                activeOrders.unshift(newOrder);
+                localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
+
+                document.getElementById('formSection').style.display = 'none';
+                document.getElementById('tokenSuccessSection').style.display = 'block';
+                document.getElementById('displayTokenNumber').innerText = `#${randomToken}`;
+                document.getElementById('displayCustDetails').innerText = `${name} (${phone}) - Pay ₹${Math.round(finalPayable)}`;
+
+                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
+            }).catch(err => {
+                alert("Order placed locally, but network sync failed. Please check connection.");
+                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
+            });
+        }
+
+        function finishAndReset() {
+            cart = [];
+            updateCartUI();
+            closeCheckoutModal();
+        }
+
+        function openMyOrders() {
+            let container = document.getElementById('ordersListContainer');
+            container.innerHTML = "";
+            let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
+
+            if (activeOrders.length === 0) {
+                container.innerHTML = `<p style="text-align: center; color: #64748b; font-size: 12px; padding: 20px 0;">No active orders found.</p>`;
+            } else {
+                activeOrders.forEach((order, index) => {
+                    let card = document.createElement('div');
+                    card.style.cssText = `background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 8px; font-size: 11.5px;`;
+                    card.innerHTML = `
+                        <div style="font-weight: 700; color: #059669; font-size: 13px; display: flex; justify-content: space-between;">
+                            <span>#${order.token} (${order.orderType})</span>
+                            <span style="color: #d97706;">₹${order.totalAmount}</span>
+                        </div>
+                        <p style="margin: 3px 0;"><b>Items:</b> ${order.items}</p>
+                        <p style="margin: 3px 0;"><b>Status:</b> <span style="color: #0284c7; font-weight:700;">${order.status || 'Pending'}</span></p>
+                        <button onclick="cancelActiveOrder(${index})" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 4px 8px; border-radius: 6px; font-weight: 600; font-size: 11px; cursor: pointer; margin-top: 6px;">Cancel Order ❌</button>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            document.getElementById('myOrdersModal').style.display = 'flex';
+        }
+
+        function cancelActiveOrder(index) {
+            if (confirm("Kya aap sach mein yeh order cancel karna chahte hain?")) {
+                let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
+                activeOrders.splice(index, 1);
+                localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
+                openMyOrders();
+                alert("Order successfully cancel kar diya gaya hai.");
+            }
+        }
+
+        function closeMyOrders() {
+            document.getElementById('myOrdersModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
