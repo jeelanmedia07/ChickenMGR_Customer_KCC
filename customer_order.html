@@ -407,28 +407,28 @@
             }).catch(err => console.log("Firebase sync error", err));
         }
 
-        function calculateCoinsForOrder(items) {
-            let totalCoins = 0;
-            if (typeof items === 'string') {
-                let matches = items.match(/([\d.]+)(kg|g)/gi);
-                if (matches) {
-                    matches.forEach(m => {
-                        let val = parseFloat(m);
-                        if (m.includes('g') && !m.includes('kg')) {
-                            val = val / 1000;
-                        }
-                        if (val > 0.5 && val <= 1) {
-                            totalCoins += 2;
-                        } else if (val > 1) {
-                            totalCoins += 4 * Math.floor(val);
-                        }
-                    });
-                } else {
-                    totalCoins = 4;
+function calculateCoinsForOrder(items) {
+    let totalCoins = 0;
+    if (typeof items === 'string') {
+        let matches = items.match(/([\d.]+)(kg|g)/gi);
+        if (matches) {
+            matches.forEach(m => {
+                let val = parseFloat(m);
+                if (m.includes('g') && !m.includes('kg')) {
+                    val = val / 1000;
                 }
-            }
-            return totalCoins > 0 ? totalCoins : 4;
+                if (val > 0.5 && val <= 1) {
+                    totalCoins += 2; // <--- Isko change karna hai
+                } else if (val > 1) {
+                    totalCoins += 4 * Math.floor(val);
+                }
+            });
+        } else {
+            totalCoins = 4;
         }
+    }
+    return totalCoins > 0 ? totalCoins : 4;
+}
 
         function initAppFeatures(shopOpen) {
             let statusBtn = document.getElementById('headerShopStatusBtn');
