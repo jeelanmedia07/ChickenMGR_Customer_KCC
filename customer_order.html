@@ -417,11 +417,8 @@ function calculateCoinsForOrder(items) {
                 if (m.includes('g') && !m.includes('kg')) {
                     val = val / 1000;
                 }
-                if (val > 0.5 && val <= 1) {
-                    totalCoins += 4; // <--- Isko change karna hai
-                } else if (val > 1) {
-                    totalCoins += 4 * Math.floor(val);
-                }
+                // Ab 1 kg par 4 coins milenge (0.5 kg par 2 coins)
+                totalCoins += Math.round(val * 4);
             });
         } else {
             totalCoins = 4;
@@ -429,7 +426,6 @@ function calculateCoinsForOrder(items) {
     }
     return totalCoins > 0 ? totalCoins : 4;
 }
-
         function initAppFeatures(shopOpen) {
             let statusBtn = document.getElementById('headerShopStatusBtn');
             let statusBadge = document.getElementById('statusMsgBadge');
