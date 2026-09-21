@@ -7,24 +7,50 @@
     <meta name="theme-color" content="#065f46">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="Logo.jpg">
+    
+    <!-- Firebase SDKs via CDN -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHo7LhTdeTfBLRFXfZLy4GqiE1k8JEW00",
+            authDomain: "kcc-customerorders.firebaseapp.com",
+            databaseURL: "https://kcc-customerorders-default-rtdb.firebaseio.com",
+            projectId: "kcc-customerorders",
+            storageBucket: "kcc-customerorders.firebasestorage.app",
+            messagingSenderId: "472690478588",
+            appId: "1:472690478588:web:d788778c1a3943a65ef679",
+            measurementId: "G-L8QPB9MTLK"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        window.firebaseDB = { db, ref, set, get, update, onValue };
+    </script>
+
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4fbf7; margin: 0; padding-bottom: 75px; }
-        header { background: #065f46; color: white; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(6,95,70,0.15); }
-        .header-brand { display: flex; align-items: center; gap: 10px; }
-        .header-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid #34d399; }
-        .header-brand h2 { margin: 0; font-size: 15px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px; }
-        .header-brand p { margin: 2px 0 0 0; font-size: 10.5px; color: #a7f3d0; }
-        .header-actions { display: flex; align-items: center; gap: 5px; }
-        .header-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; display: flex; align-items: center; gap: 3px; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f4fbf7; margin: 0; padding-bottom: 90px; }
+        
+        header { background: url('Header Background.jpeg') no-repeat center center; background-size: cover; color: white; padding: 14px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 12px rgba(6,95,70,0.2); }
+        .header-brand { display: flex; align-items: center; gap: 8px; }
+        .header-brand img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid #34d399; }
+        .header-brand h2 { margin: 0; font-size: 14px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .header-brand p { margin: 1px 0 0 0; font-size: 10px; color: #a7f3d0; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .header-actions { display: flex; align-items: center; gap: 4px; }
+        .header-btn { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 5px 8px; border-radius: 7px; font-size: 10.5px; font-weight: 600; cursor: pointer; white-space: nowrap; text-decoration: none; display: flex; align-items: center; gap: 2px; backdrop-filter: blur(4px); }
+        
         .container { padding: 14px; max-width: 480px; margin: auto; }
         #singleStatusBar { display: flex; align-items: center; justify-content: space-between; padding: 11px 14px; border-radius: 12px; margin-bottom: 14px; font-size: 12px; font-weight: 600; border: 1px solid #d1fae5; background: #ffffff; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+        
         .banner-box { background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.03); margin-bottom: 14px; border: 1px solid #d1fae5; text-align: center; position: relative; }
         .banner-box video { width: 100%; max-height: 180px; object-fit: cover; display: block; }
         .mute-toggle-btn { position: absolute; top: 10px; right: 10px; background: rgba(0, 0, 0, 0.6); color: white; border: 1px solid rgba(255, 255, 255, 0.4); padding: 6px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(4px); z-index: 10; }
         .banner-text { padding: 12px; }
         .banner-text h3 { margin: 0 0 4px 0; color: #065f46; font-size: 15px; font-weight: 700; }
         .banner-text p { margin: 0; color: #64748b; font-size: 12px; }
+        
         .section-title { font-size: 14px; font-weight: 700; color: #1e293b; margin: 16px 0 10px 2px; display: flex; justify-content: space-between; align-items: center; }
         
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
@@ -32,32 +58,31 @@
         
         .product-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; }
         .product-card h4 { margin: 6px 0 2px 0; font-size: 13px; color: #1e293b; font-weight: 700; }
-        .product-card .price { font-size: 13px; color: #047857; font-weight: 800; margin-bottom: 6px; background: #ecfdf5; padding: 3px 6px; border-radius: 6px; display: inline-block; width: 100%; border: 1px dashed #34d399; }
+        .product-card .price { font-size: 12px; color: #047857; font-weight: 800; margin-bottom: 8px; background: #ecfdf5; padding: 3px 6px; border-radius: 6px; display: inline-block; width: 100%; border: 1px dashed #34d399; }
         
         .product-controls { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; text-align: left; background: #f8fafc; padding: 8px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .mode-toggle { display: flex; background: #e2e8f0; border-radius: 6px; padding: 2px; font-size: 10.5px; font-weight: 700; text-align: center; }
+        .mode-btn { flex: 1; padding: 4px; border-radius: 5px; cursor: pointer; color: #64748b; transition: all 0.2s; }
+        .mode-btn.active { background: #ffffff; color: #059669; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         
-        /* Tick Option Tabs */
-        .mode-tabs { display: flex; gap: 4px; background: #e2e8f0; padding: 2px; border-radius: 6px; }
-        .mode-tab { flex: 1; text-align: center; font-size: 10px; font-weight: 700; padding: 4px 2px; border-radius: 4px; cursor: pointer; color: #475569; transition: all 0.2s; }
-        .mode-tab.active { background: #059669; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
-        .product-controls input { width: 100%; padding: 6px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 7px; background: #ffffff; color: #334155; outline: none; }
+        .product-controls input { width: 100%; padding: 7px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 7px; background: #ffffff; color: #334155; outline: none; text-align: center; font-weight: 600; }
+        
         .add-btn { background: #059669; color: white; border: none; padding: 8px; border-radius: 8px; font-size: 11.5px; font-weight: 700; cursor: pointer; width: 100%; box-shadow: 0 2px 6px rgba(5,150,105,0.2); }
 
         .coins-widget { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 1px solid #fde68a; border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 8px rgba(217,119,6,0.06); }
         .coins-info h4 { margin: 0 0 2px 0; font-size: 13px; color: #92400e; font-weight: 700; }
         .coins-info p { margin: 0; font-size: 11px; color: #b45309; }
         
-        /* Footer Styling */
-       /* Footer Styling */
         .app-footer { text-align: center; padding: 25px 10px 15px 10px; margin-top: 25px; color: #64748b; font-size: 13px; font-weight: 800; border-top: 1px solid #e2e8f0; background: #ffffff; }
         .footer-img { width: 100%; max-width: 480px; height: auto; border-radius: 12px; display: block; margin: 0 auto 12px auto; object-fit: cover; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
-        .cart-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #ffffff; padding: 12px 16px; box-shadow: -4px 15px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #d1fae5; z-index: 999; }
-        .cart-info { font-size: 13.5px; color: #1e293b; font-weight: 700; }
-        .checkout-btn { background: #d97706; color: white; border: none; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 12.5px; cursor: pointer; box-shadow: 0 2px 8px rgba(217,119,6,0.3); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0; z-index: 998; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); max-width: 480px; margin: auto; }
+        .nav-item { text-align: center; font-size: 11px; font-weight: 700; color: #64748b; cursor: pointer; flex: 1; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .nav-item.active { color: #059669; }
+        .nav-icon { font-size: 18px; }
         
-        #complaintModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
+        #complaintModal, #checkoutModal, #myOrdersModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content-box { background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center; margin: auto; }
     </style>
 </head>
 <body onload="checkCustomerSetup()">
@@ -70,10 +95,9 @@
                 <p id="headerCustGreeting">Dashboard</p>
             </div>
         </div>
-       <div class="header-actions">
-            <button onclick="openComplaintModal()" class="header-btn" style="background: #dc2626; border-color: #f87171;">💬 Feedback</button>
-            <button id="headerShopStatusBtn" class="header-btn" style="background: #10b981; border-color: #34d399;">🟢 Open</button>
-            <button onclick="openMyOrders()" class="header-btn" style="background: #ffffff; border-color: #fbbf24; color: #1e293b; font-size: 14px; padding: 4px 8px;" title="My Orders & Tokens">🛒</button>
+        <div class="header-actions">
+            <button onclick="openComplaintModal()" class="header-btn" style="background: rgba(220,38,38,0.8); border-color: #f87171;">💬 Feedback</button>
+            <button id="headerShopStatusBtn" class="header-btn" style="background: rgba(16,185,129,0.8); border-color: #34d399;">🟢 Open</button>
         </div>
     </header>
 
@@ -92,12 +116,13 @@
 
         <div class="banner-box">
             <button id="muteToggleBtn" class="mute-toggle-btn" onclick="toggleVideoMute()">🔇 Unmute</button>
-           <video id="promoVideo" src="https://archive.org/download/kadir-chicken-center-kcc/Video.mp4" autoplay loop muted playsinline></video>
-             <div class="banner-text">
+            <video id="promoVideo" src="https://archive.org/download/kadir-chicken-center-kcc/Video.mp4" autoplay loop muted playsinline></video>
+            <div class="banner-text">
                 <h3>Fresh Raw Chicken & Ready Items</h3>
                 <p>100% Fresh, Clean & Hygienic Cut Delivered to You</p>
             </div>
         </div>
+
         <div class="section-title">
             <span>Fresh Chicken Categories</span>
             <span style="font-size: 11px; color: #059669; font-weight: 600;">Home Delivery Available (+₹20)</span>
@@ -112,22 +137,14 @@
                     <div class="price" id="price_curry">₹240 / kg</div>
                 </div>
                 <div class="product-controls">
-                    <div class="mode-tabs">
-                        <div id="tab_kg_curry" class="mode-tab active" onclick="switchOrderMode('curry', 'kg')">⚖️ Vajan (Kg) ✓</div>
-                        <div id="tab_price_curry" class="mode-tab" onclick="switchOrderMode('curry', 'price')">💵 Rupees (₹)</div>
+                    <div class="mode-toggle">
+                        <div id="mode_btn_kg_curry" class="mode-btn active" onclick="switchProductMode('curry', 'kg')">Vajan (Kg)</div>
+                        <div id="mode_btn_rs_curry" class="mode-btn" onclick="switchProductMode('curry', 'rs')">Rupees (₹)</div>
                     </div>
-                    
-                    <div id="box_kg_curry" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" step="0.05" id="kgInput_curry" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('curry', 240)" style="width: 65%;">
-                        <span id="autoPrice_curry" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
-                    </div>
-
-                    <div id="box_price_curry" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" id="priceInput_curry" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('curry', 240)" style="width: 60%;">
-                        <span id="autoWeight_curry" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
-                    </div>
+                    <input type="number" step="any" id="input_curry" placeholder="Kitna Kg chahiye?" oninput="calculateDynamicPrice('curry', 240)">
+                    <div id="autoText_curry" style="font-size: 11px; font-weight: bold; color: #059669; text-align: center; margin-top: 2px;">Total: ₹0</div>
                 </div>
-                <button class="add-btn" onclick="addUniversalToCart('Fresh Chicken', 'rate_curry', 'curry', 240)">Add to Cart</button>
+                <button class="add-btn" onclick="addDynamicToCart('Fresh Chicken', 'rate_curry', 'curry', 240)">Add to Cart</button>
             </div>
 
             <!-- 2. Chicken Leg Piece -->
@@ -138,22 +155,14 @@
                     <div class="price" id="price_leg">₹280 / kg</div>
                 </div>
                 <div class="product-controls">
-                    <div class="mode-tabs">
-                        <div id="tab_kg_leg" class="mode-tab active" onclick="switchOrderMode('leg', 'kg')">⚖️ Vajan (Kg) ✓</div>
-                        <div id="tab_price_leg" class="mode-tab" onclick="switchOrderMode('leg', 'price')">💵 Rupees (₹)</div>
+                    <div class="mode-toggle">
+                        <div id="mode_btn_kg_leg" class="mode-btn active" onclick="switchProductMode('leg', 'kg')">Vajan (Kg)</div>
+                        <div id="mode_btn_rs_leg" class="mode-btn" onclick="switchProductMode('leg', 'rs')">Rupees (₹)</div>
                     </div>
-                    
-                    <div id="box_kg_leg" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" step="0.05" id="kgInput_leg" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('leg', 280)" style="width: 65%;">
-                        <span id="autoPrice_leg" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
-                    </div>
-
-                    <div id="box_price_leg" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" id="priceInput_leg" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('leg', 280)" style="width: 60%;">
-                        <span id="autoWeight_leg" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
-                    </div>
+                    <input type="number" step="any" id="input_leg" placeholder="Kitna Kg chahiye?" oninput="calculateDynamicPrice('leg', 280)">
+                    <div id="autoText_leg" style="font-size: 11px; font-weight: bold; color: #059669; text-align: center; margin-top: 2px;">Total: ₹0</div>
                 </div>
-                <button class="add-btn" onclick="addUniversalToCart('Chicken Leg Piece', 'rate_leg', 'leg', 280)">Add to Cart</button>
+                <button class="add-btn" onclick="addDynamicToCart('Chicken Leg Piece', 'rate_leg', 'leg', 280)">Add to Cart</button>
             </div>
 
             <!-- 3. Chicken Boneless -->
@@ -164,22 +173,14 @@
                     <div class="price" id="price_boneless">₹340 / kg</div>
                 </div>
                 <div class="product-controls">
-                    <div class="mode-tabs">
-                        <div id="tab_kg_boneless" class="mode-tab active" onclick="switchOrderMode('boneless', 'kg')">⚖️ Vajan (Kg) ✓</div>
-                        <div id="tab_price_boneless" class="mode-tab" onclick="switchOrderMode('boneless', 'price')">💵 Rupees (₹)</div>
+                    <div class="mode-toggle">
+                        <div id="mode_btn_kg_boneless" class="mode-btn active" onclick="switchProductMode('boneless', 'kg')">Vajan (Kg)</div>
+                        <div id="mode_btn_rs_boneless" class="mode-btn" onclick="switchProductMode('boneless', 'rs')">Rupees (₹)</div>
                     </div>
-                    
-                    <div id="box_kg_boneless" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" step="0.05" id="kgInput_boneless" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('boneless', 340)" style="width: 65%;">
-                        <span id="autoPrice_boneless" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
-                    </div>
-
-                    <div id="box_price_boneless" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" id="priceInput_boneless" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('boneless', 340)" style="width: 60%;">
-                        <span id="autoWeight_boneless" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
-                    </div>
+                    <input type="number" step="any" id="input_boneless" placeholder="Kitna Kg chahiye?" oninput="calculateDynamicPrice('boneless', 340)">
+                    <div id="autoText_boneless" style="font-size: 11px; font-weight: bold; color: #059669; text-align: center; margin-top: 2px;">Total: ₹0</div>
                 </div>
-                <button class="add-btn" onclick="addUniversalToCart('Chicken Boneless', 'rate_boneless', 'boneless', 340)">Add to Cart</button>
+                <button class="add-btn" onclick="addDynamicToCart('Chicken Boneless', 'rate_boneless', 'boneless', 340)">Add to Cart</button>
             </div>
 
             <!-- 4. Liver / Kaleji -->
@@ -190,35 +191,38 @@
                     <div class="price" id="price_liver">₹200 / kg</div>
                 </div>
                 <div class="product-controls">
-                    <div class="mode-tabs">
-                        <div id="tab_kg_liver" class="mode-tab active" onclick="switchOrderMode('liver', 'kg')">⚖️ Vajan (Kg) ✓</div>
-                        <div id="tab_price_liver" class="mode-tab" onclick="switchOrderMode('liver', 'price')">💵 Rupees (₹)</div>
+                    <div class="mode-toggle">
+                        <div id="mode_btn_kg_liver" class="mode-btn active" onclick="switchProductMode('liver', 'kg')">Vajan (Kg)</div>
+                        <div id="mode_btn_rs_liver" class="mode-btn" onclick="switchProductMode('liver', 'rs')">Rupees (₹)</div>
                     </div>
-                    
-                    <div id="box_kg_liver" style="display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" step="0.05" id="kgInput_liver" placeholder="Jaise: 0.250, 1kg" oninput="calculatePriceByWeight('liver', 200)" style="width: 65%;">
-                        <span id="autoPrice_liver" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 35%; text-align: center;">₹0</span>
-                    </div>
-
-                    <div id="box_price_liver" style="display: none; display: flex; gap: 4px; align-items: center; margin-top: 4px;">
-                        <input type="number" id="priceInput_liver" placeholder="Jaise: 100, 150" oninput="calculateWeightByPrice('liver', 200)" style="width: 60%;">
-                        <span id="autoWeight_liver" style="font-size: 10px; font-weight: bold; color: #059669; background: #e6f4ed; padding: 6px 2px; border-radius: 6px; width: 40%; text-align: center;">0g</span>
-                    </div>
+                    <input type="number" step="any" id="input_liver" placeholder="Kitna Kg chahiye?" oninput="calculateDynamicPrice('liver', 200)">
+                    <div id="autoText_liver" style="font-size: 11px; font-weight: bold; color: #059669; text-align: center; margin-top: 2px;">Total: ₹0</div>
                 </div>
-                <button class="add-btn" onclick="addUniversalToCart('Liver / Kaleji', 'rate_liver', 'liver', 200)">Add to Cart</button>
+                <button class="add-btn" onclick="addDynamicToCart('Liver / Kaleji', 'rate_liver', 'liver', 200)">Add to Cart</button>
             </div>
         </div>
 
-        <!-- Footer Section with Image Above -->
         <footer class="app-footer">
             <img src="img_01.jpg" alt="Footer Banner" class="footer-img">
             <span>Chicken MGR initiate with Kadir chicken center</span>
         </footer>
     </div>
 
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+            <span class="nav-icon">🏠</span>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="openMyOrders()">
+            <span class="nav-icon">📦</span>
+            <span>My Orders</span>
+        </div>
+    </div>
+
     <!-- Complaint Modal -->
     <div id="complaintModal">
-        <div style="background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center;">
+        <div class="modal-content-box">
             <h3 style="margin-top: 0; color: #dc2626; font-size: 17px; font-weight: 700;">💬 Shikayat / Feedback</h3>
             <p style="font-size: 11.5px; color: #64748b; margin-bottom: 12px;">Apni shikayat ya sujhaav likhein, seedha WhatsApp (9096214201) par jayega:</p>
             <textarea id="customerComplaintText" placeholder="Apni baat yahan likhein..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 12px; height: 80px; outline: none; background: #fef2f2; resize: none; margin-bottom: 14px; color: #1e293b;"></textarea>
@@ -229,14 +233,9 @@
         </div>
     </div>
 
-    <div class="cart-bar" id="cartBar" style="display: none;">
-        <div class="cart-info" id="cartSummary">0 Items | ₹0</div>
-        <button class="checkout-btn" onclick="openCheckoutModal()">Place Priority Order 🚀</button>
-    </div>
-
     <!-- Checkout Modal -->
-    <div id="checkoutModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center;">
+    <div id="checkoutModal">
+        <div class="modal-content-box">
             <div id="formSection">
                 <h3 style="margin-top: 0; color: #1e293b; font-size: 17px; font-weight: 700;">Order Type & Details</h3>
                 <div style="background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px; border-radius: 8px; margin-bottom: 12px; font-size: 11.5px; color: #166534; font-weight: 600; text-align: left;">
@@ -286,11 +285,12 @@
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button onclick="generateTokenOrder()" style="flex: 1; background: #059669; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Generate Token</button>
+                    <button onclick="generateTokenOrder()" style="flex: 1; background: #059669; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Placing Order</button>
                     <button onclick="closeCheckoutModal()" style="background: #e2e8f0; color: #475569; border: none; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 12.5px; cursor: pointer;">Cancel</button>
                 </div>
             </div>
 
+            <!-- Placed Order Success / Token Pop-up -->
             <div id="tokenSuccessSection" style="display: none;">
                 <div style="font-size: 38px; margin-bottom: 6px;">🎟️</div>
                 <h3 style="margin: 0 0 4px 0; color: #1e293b; font-size: 17px; font-weight: 700;">Order Placed Successfully!</h3>
@@ -306,8 +306,8 @@
     </div>
 
     <!-- My Orders Modal -->
-    <div id="myOrdersModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center;">
-        <div style="background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; text-align: center; box-shadow: 0 15px 30px rgba(0,0,0,0.15);">
+    <div id="myOrdersModal">
+        <div class="modal-content-box">
             <h3 style="margin-top: 0; color: #1e293b; font-size: 17px; font-weight: 700;">Your Active Tokens & Orders</h3>
             <div id="ordersListContainer" style="max-height: 250px; overflow-y: auto; text-align: left; margin: 10px 0;"></div>
             <button onclick="closeMyOrders()" style="background: #065f46; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%;">Close</button>
@@ -315,16 +315,40 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygP1DJtTufg5LUGYiribIPsKQR_wIzFnWYTyFKyvY1MAKcu5AMFuE7ASkmmImi-oqggA/exec";
         let cart = [];
         let liveRatesMap = { rate_curry: 240, rate_leg: 280, rate_boneless: 340, rate_liver: 200 };
         let currentShopOpenStatus = "true";
-        let activeModesMap = { curry: 'kg', leg: 'kg', boneless: 'kg', liver: 'kg' };
+        let productModes = { curry: 'kg', leg: 'kg', boneless: 'kg', liver: 'kg' };
 
-        setInterval(() => {
-            fetchCloudSettingsAndRates();
-            checkOrderStatusAndSyncCoins();
-        }, 6000);
+        // Firebase Sync Loop / Listener Setup after short delay to let module load
+        setTimeout(() => {
+            if (window.firebaseDB) {
+                const { db, ref, onValue } = window.firebaseDB;
+                
+                // Real-time Settings & Rates listener from Firebase
+                onValue(ref(db, 'settings'), (snapshot) => {
+                    const settings = snapshot.val();
+                    if (settings) {
+                        currentShopOpenStatus = settings.shopOpen !== undefined ? settings.shopOpen : "true";
+                        if (settings.rates) {
+                            liveRatesMap.rate_curry = parseFloat(settings.rates.curry) || 240;
+                            liveRatesMap.rate_leg = parseFloat(settings.rates.leg) || 280;
+                            liveRatesMap.rate_boneless = parseFloat(settings.rates.boneless) || 340;
+                            liveRatesMap.rate_liver = parseFloat(settings.rates.liver) || 200;
+                        }
+                        document.getElementById('price_curry').innerText = `₹${liveRatesMap.rate_curry} / kg`;
+                        document.getElementById('price_leg').innerText = `₹${liveRatesMap.rate_leg} / kg`;
+                        document.getElementById('price_boneless').innerText = `₹${liveRatesMap.rate_boneless} / kg`;
+                        document.getElementById('price_liver').innerText = `₹${liveRatesMap.rate_liver} / kg`;
+                        initAppFeatures(currentShopOpenStatus);
+                    }
+                });
+
+                setInterval(() => {
+                    checkOrderStatusAndSyncCoins();
+                }, 6000);
+            }
+        }, 1000);
 
         function checkCustomerSetup() {
             let savedName = localStorage.getItem('kcc_customer_name');
@@ -339,53 +363,28 @@
             document.getElementById('displaySavedName').innerText = savedName;
             document.getElementById('displaySavedPhone').innerText = savedPhone;
 
-            fetchCloudSettingsAndRates();
             updateCoinsUI();
-            checkOrderStatusAndSyncCoins();
-        }
-
-        function fetchCloudSettingsAndRates() {
-            fetch(SCRIPT_URL + "?action=getSettings")
-            .then(res => res.json())
-            .then(settings => {
-                currentShopOpenStatus = settings.shopOpen;
-                
-                if (settings.rates) {
-                    liveRatesMap.rate_curry = parseFloat(settings.rates.curry) || 240;
-                    liveRatesMap.rate_leg = parseFloat(settings.rates.leg) || 280;
-                    liveRatesMap.rate_boneless = parseFloat(settings.rates.boneless) || 340;
-                    liveRatesMap.rate_liver = parseFloat(settings.rates.liver) || 200;
-                }
-
-                document.getElementById('price_curry').innerText = `₹${liveRatesMap.rate_curry} / kg`;
-                document.getElementById('price_leg').innerText = `₹${liveRatesMap.rate_leg} / kg`;
-                document.getElementById('price_boneless').innerText = `₹${liveRatesMap.rate_boneless} / kg`;
-                document.getElementById('price_liver').innerText = `₹${liveRatesMap.rate_liver} / kg`;
-
-                initAppFeatures(currentShopOpenStatus);
-            }).catch(err => {
-                console.log("Using default fallback rates", err);
-                initAppFeatures("true");
-            });
         }
 
         function checkOrderStatusAndSyncCoins() {
             let phone = localStorage.getItem('kcc_customer_phone');
-            if (!phone) return;
+            if (!phone || !window.firebaseDB) return;
 
             let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
             if (activeOrders.length === 0) return;
 
-            fetch(SCRIPT_URL)
-            .then(res => res.json())
-            .then(serverOrders => {
-                if (!Array.isArray(serverOrders)) return;
-
+            const { db, ref, get } = window.firebaseDB;
+            get(ref(db, 'orders')).then((snapshot) => {
+                const serverOrdersObj = snapshot.val();
+                if (!serverOrdersObj) return;
+                
+                let serverOrders = Object.values(serverOrdersObj);
                 let updated = false;
+
                 activeOrders.forEach(order => {
                     if (order.phone === phone && order.status !== "Completed") {
-                        let match = serverOrders.find(s => s.Token === order.token || s.token === order.token);
-                        if (match && (match.Status === "Completed" || match.status === "Completed")) {
+                        let match = serverOrders.find(s => s.token === order.token || s.Token === order.token);
+                        if (match && (match.status === "Completed" || match.Status === "Completed")) {
                             order.status = "Completed";
                             updated = true;
 
@@ -405,7 +404,7 @@
                 if (updated) {
                     localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
                 }
-            }).catch(err => console.log("Sync error", err));
+            }).catch(err => console.log("Firebase sync error", err));
         }
 
         function calculateCoinsForOrder(items) {
@@ -433,19 +432,17 @@
 
         function initAppFeatures(shopOpen) {
             let statusBtn = document.getElementById('headerShopStatusBtn');
-            let cartBar = document.getElementById('cartBar');
             let statusBadge = document.getElementById('statusMsgBadge');
             
             if (shopOpen === "false" || shopOpen === false) {
-                statusBtn.style.background = "#ef4444";
+                statusBtn.style.background = "rgba(239,68,68,0.8)";
                 statusBtn.innerText = "🔴 Closed";
-                if (cartBar) cartBar.style.display = 'none';
                 
                 statusBadge.innerText = "🔴 Shop Closed (Ordering Paused)";
                 statusBadge.style.background = "#fee2e2";
                 statusBadge.style.color = "#991b1b";
             } else {
-                statusBtn.style.background = "#10b981";
+                statusBtn.style.background = "rgba(16,185,129,0.8)";
                 statusBtn.innerText = "🟢 Open";
                 
                 statusBadge.innerText = "🟢 Khula Hai (Fresh Stock Ready)";
@@ -476,120 +473,86 @@
             }
         }
 
-        function switchOrderMode(key, mode) {
-            activeModesMap[key] = mode;
-            let kgTab = document.getElementById('tab_kg_' + key);
-            let priceTab = document.getElementById('tab_price_' + key);
-            let kgBox = document.getElementById('box_kg_' + key);
-            let priceBox = document.getElementById('box_price_' + key);
+        function switchProductMode(itemKey, mode) {
+            productModes[itemKey] = mode;
+            let kgBtn = document.getElementById('mode_btn_kg_' + itemKey);
+            let rsBtn = document.getElementById('mode_btn_rs_' + itemKey);
+            let inputField = document.getElementById('input_' + itemKey);
 
             if (mode === 'kg') {
-                kgTab.classList.add('active');
-                kgTab.innerHTML = "⚖️ Vajan (Kg) ✓";
-                priceTab.classList.remove('active');
-                priceTab.innerHTML = "💵 Rupees (₹)";
-
-                kgBox.style.display = 'flex';
-                priceBox.style.display = 'none';
+                kgBtn.classList.add('active');
+                rsBtn.classList.remove('active');
+                inputField.placeholder = "Kitna Kg chahiye? (Jaise: 0.5, 1)";
             } else {
-                priceTab.classList.add('active');
-                priceTab.innerHTML = "💵 Rupees (₹) ✓";
-                kgTab.classList.remove('active');
-                kgTab.innerHTML = "⚖️ Vajan (Kg)";
-
-                kgBox.style.display = 'none';
-                priceBox.style.display = 'flex';
+                rsBtn.classList.add('active');
+                kgBtn.classList.remove('active');
+                inputField.placeholder = "Kitne Rupees ka? (Jaise: 100, 200)";
             }
+            inputField.value = "";
+            document.getElementById('autoText_' + itemKey).innerText = "Total: ₹0";
         }
 
-        function calculatePriceByWeight(itemKey, defaultRate) {
+        function calculateDynamicPrice(itemKey, defaultRate) {
             let rateKey = 'rate_' + itemKey;
             let currentRate = liveRatesMap[rateKey] || defaultRate;
-            let inputField = document.getElementById('kgInput_' + itemKey);
-            let priceSpan = document.getElementById('autoPrice_' + itemKey);
-            
-            let enteredKg = parseFloat(inputField.value) || 0;
+            let inputField = document.getElementById('input_' + itemKey);
+            let autoText = document.getElementById('autoText_' + itemKey);
+            let mode = productModes[itemKey];
+            let enteredVal = parseFloat(inputField.value) || 0;
 
-            if (enteredKg > 0 && currentRate > 0) {
-                let calculatedPrice = Math.round(enteredKg * currentRate);
-                priceSpan.innerText = "₹" + calculatedPrice;
-                inputField.setAttribute('data-calc-price', calculatedPrice);
-            } else {
-                priceSpan.innerText = "₹0";
-                inputField.setAttribute('data-calc-price', "0");
-            }
-        }
-
-        function calculateWeightByPrice(itemKey, defaultRate) {
-            let rateKey = 'rate_' + itemKey;
-            let currentRate = liveRatesMap[rateKey] || defaultRate;
-            let inputField = document.getElementById('priceInput_' + itemKey);
-            let weightSpan = document.getElementById('autoWeight_' + itemKey);
-            
-            let enteredPrice = parseFloat(inputField.value) || 0;
-
-            if (enteredPrice > 0 && currentRate > 0) {
-                let weightKg = enteredPrice / currentRate;
-                if (weightKg < 1) {
-                    let grams = Math.round(weightKg * 1000);
-                    weightSpan.innerText = grams + "g";
+            if (enteredVal > 0 && currentRate > 0) {
+                if (mode === 'kg') {
+                    let price = Math.round(enteredVal * currentRate);
+                    autoText.innerText = `Total: ₹${price}`;
                 } else {
-                    weightSpan.innerText = weightKg.toFixed(2) + "kg";
+                    let approxKg = (enteredVal / currentRate).toFixed(2);
+                    autoText.innerText = `Approx Vajan: ~${approxKg} Kg`;
                 }
-                inputField.setAttribute('data-calc-weight', weightKg.toFixed(3));
             } else {
-                weightSpan.innerText = "0g";
-                inputField.setAttribute('data-calc-weight', "0");
+                autoText.innerText = mode === 'kg' ? "Total: ₹0" : "Approx Vajan: ~0 Kg";
             }
         }
 
-        function addUniversalToCart(name, rateKey, keySuffix, defaultRate) {
-            let currentRate = liveRatesMap[rateKey] || defaultRate;
-            let mode = activeModesMap[keySuffix] || 'kg';
-            
-            let finalPrice = 0;
-            let finalQty = 0;
-
-            if (mode === 'kg') {
-                let inputField = document.getElementById('kgInput_' + keySuffix);
-                let enteredKg = parseFloat(inputField.value) || 0;
-
-                if (enteredKg <= 0) {
-                    alert("Kripya sahi vajan (Kg) darj karein! (Jaise: 0.250, 0.5, 1)");
-                    return;
-                }
-                finalQty = enteredKg;
-                finalPrice = Math.round(finalQty * currentRate);
-
-                inputField.value = "";
-                document.getElementById('autoPrice_' + keySuffix).innerText = "₹0";
-            } else {
-                let inputField = document.getElementById('priceInput_' + keySuffix);
-                let enteredPrice = parseFloat(inputField.value) || 0;
-                let calcWeight = parseFloat(inputField.getAttribute('data-calc-weight')) || 0;
-
-                if (enteredPrice <= 0 || calcWeight <= 0) {
-                    alert("Kripya sahi amount (₹) darj karein!");
-                    return;
-                }
-                finalPrice = enteredPrice;
-                finalQty = parseFloat(calcWeight.toFixed(3));
-                
-                inputField.value = "";
-                document.getElementById('autoWeight_' + keySuffix).innerText = "0g";
-                inputField.setAttribute('data-calc-weight', "0");
+        function addDynamicToCart(name, rateKey, keySuffix, defaultRate) {
+            if (currentShopOpenStatus === "false") {
+                alert("Sorry, shop is currently closed. You cannot place orders right now!");
+                return;
             }
 
-            cart.push({
+            let currentRate = liveRatesMap[rateKey] || defaultRate;
+            let inputField = document.getElementById('input_' + keySuffix);
+            let enteredVal = parseFloat(inputField.value) || 0;
+            let mode = productModes[keySuffix];
+
+            if (enteredVal <= 0) {
+                alert(mode === 'kg' ? "Kripya vajan (Kg) darj karein!" : "Kripya rupees (₹) darj karein!");
+                return;
+            }
+
+            let finalPrice = 0;
+            let finalQtyDesc = "";
+
+            if (mode === 'kg') {
+                finalPrice = Math.round(enteredVal * currentRate);
+                finalQtyDesc = `${enteredVal}kg`;
+            } else {
+                finalPrice = Math.round(enteredVal);
+                let calcKg = (enteredVal / currentRate).toFixed(2);
+                finalQtyDesc = `₹${enteredVal} (~${calcKg}kg)`;
+            }
+
+            inputField.value = "";
+            document.getElementById('autoText_' + keySuffix).innerText = mode === 'kg' ? "Total: ₹0" : "Approx Vajan: ~0 Kg";
+
+            // Reset cart with single item directly for direct checkout popup
+            cart = [{
                 name: name,
                 price: finalPrice,
-                qty: finalQty,
-                rate: currentRate,
-                isPriceMode: (mode === 'price')
-            });
+                qty: finalQtyDesc,
+                rate: currentRate
+            }];
 
-            updateCartUI();
-            alert(`${name} (${finalQty < 1 ? Math.round(finalQty*1000)+'g' : finalQty+'kg'} - ₹${finalPrice}) cart me jud gaya! 🚀`);
+            openCheckoutModal();
         }
 
         function openComplaintModal() {
@@ -623,24 +586,7 @@
             closeComplaintModal();
         }
 
-        function updateCartUI() {
-            let totalItems = cart.length;
-            let totalPrice = cart.reduce((sum, i) => sum + i.price, 0);
-            let cartBar = document.getElementById('cartBar');
-            if (totalItems > 0 && currentShopOpenStatus !== "false") {
-                cartBar.style.display = 'flex';
-                document.getElementById('cartSummary').innerText = `${totalItems} Items | ₹${Math.round(totalPrice)}`;
-            } else {
-                cartBar.style.display = 'none';
-            }
-        }
-
         function openCheckoutModal() {
-            if (currentShopOpenStatus === "false") {
-                alert("Sorry, shop is currently closed. You cannot place orders right now!");
-                return;
-            }
-
             let phone = localStorage.getItem('kcc_customer_phone');
             let coinsData = JSON.parse(localStorage.getItem('kcc_coins_' + phone) || '{"coins": 0, "timestamp": ' + new Date().getTime() + '}');
             let redeemContainer = document.getElementById('checkoutRedeemContainer');
@@ -655,6 +601,7 @@
 
             document.getElementById('checkoutOrderNote').value = "";
             recalculateCheckoutTotal();
+            
             document.getElementById('formSection').style.display = 'block';
             document.getElementById('tokenSuccessSection').style.display = 'none';
             document.getElementById('checkoutModal').style.display = 'flex';
@@ -704,12 +651,6 @@
         }
 
         function generateTokenOrder() {
-            let btn = document.querySelector('#formSection button[onclick="generateTokenOrder()"]');
-            if (btn) {
-                btn.disabled = true;
-                btn.innerText = "Placing Order... ⏳";
-            }
-
             let name = localStorage.getItem('kcc_customer_name');
             let phone = localStorage.getItem('kcc_customer_phone');
             let orderType = document.getElementById('orderType').value;
@@ -719,7 +660,6 @@
 
             if (orderType === 'Delivery' && !address) {
                 alert("Please enter delivery address!");
-                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
                 return;
             }
 
@@ -728,7 +668,6 @@
 
             if (isRedeeming && coinsData.coins < 120) {
                 alert("Invalid request: Insufficient coins for redemption!");
-                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
                 return;
             }
 
@@ -743,7 +682,7 @@
             }
             let finalPayable = Math.max(0, subtotal + deliveryFee - discount);
             
-            let itemsString = cart.map(i => `${i.name} (${i.qty < 1 ? Math.round(i.qty*1000)+'g' : i.qty+'kg'}) - ₹${i.price}`).join(', ');
+            let itemsString = cart.map(i => `${i.name} (${i.qty}) - ₹${i.price}`).join(', ');
             if (deliveryFee > 0) {
                 itemsString += ` + Home Delivery (₹20)`;
             }
@@ -761,7 +700,6 @@
 
             let now = new Date();
             let newOrder = {
-                action: "addOrder",
                 token: randomToken,
                 customerName: name,
                 phone: phone,
@@ -774,32 +712,28 @@
                 badgeText: specialBadgeText
             };
 
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newOrder)
-            }).then(() => {
-                let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
-                newOrder.status = "Pending";
-                activeOrders.unshift(newOrder);
-                localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
+            let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
+            activeOrders.unshift(newOrder);
+            localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
 
-                document.getElementById('formSection').style.display = 'none';
-                document.getElementById('tokenSuccessSection').style.display = 'block';
-                document.getElementById('displayTokenNumber').innerText = `#${randomToken}`;
-                document.getElementById('displayCustDetails').innerText = `${name} (${phone}) - Pay ₹${Math.round(finalPayable)}`;
+            document.getElementById('formSection').style.display = 'none';
+            document.getElementById('tokenSuccessSection').style.display = 'block';
+            document.getElementById('displayTokenNumber').innerText = `#${randomToken}`;
+            document.getElementById('displayCustDetails').innerText = `${name} (${phone}) - Pay ₹${Math.round(finalPayable)}`;
+            
+            document.getElementById('checkoutModal').style.display = 'flex';
 
-                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
-            }).catch(err => {
-                alert("Order placed locally, but network sync failed. Please check connection.");
-                if (btn) { btn.disabled = false; btn.innerText = "Generate Token"; }
-            });
+            // Save order directly to Firebase Realtime Database
+            if (window.firebaseDB) {
+                const { db, ref, set } = window.firebaseDB;
+                set(ref(db, 'orders/' + randomToken), newOrder).catch(err => {
+                    console.log("Firebase order save error: ", err);
+                });
+            }
         }
 
         function finishAndReset() {
             cart = [];
-            updateCartUI();
             closeCheckoutModal();
         }
 
