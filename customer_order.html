@@ -407,7 +407,7 @@
             }).catch(err => console.log("Firebase sync error", err));
         }
 
-function calculateCoinsForOrder(items) {
+      function calculateCoinsForOrder(items) {
     let totalCoins = 0;
     if (typeof items === 'string') {
         let matches = items.match(/([\d.]+)(kg|g)/gi);
@@ -695,6 +695,12 @@ function calculateCoinsForOrder(items) {
             }
 
             let now = new Date();
+            let year = now.getFullYear();
+            let month = String(now.getMonth() + 1).padStart(2, '0');
+            let day = String(now.getDate()).padStart(2, '0');
+            let formattedDate = `${year}-${month}-${day}`;
+            let formattedTime = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+
             let newOrder = {
                 token: randomToken,
                 customerName: name,
@@ -703,11 +709,12 @@ function calculateCoinsForOrder(items) {
                 address: address || 'Store Pickup',
                 items: orderDetails,
                 totalAmount: Math.round(finalPayable),
-                time: now.toLocaleTimeString(),
+                date: formattedDate,
+                time: formattedTime,
+                timestamp: now.getTime(), // Newest order upar rakhne ke liye exact timestamp
                 status: "Pending",
                 badgeText: specialBadgeText
             };
-
             let activeOrders = JSON.parse(localStorage.getItem('customer_active_orders') || '[]');
             activeOrders.unshift(newOrder);
             localStorage.setItem('customer_active_orders', JSON.stringify(activeOrders));
