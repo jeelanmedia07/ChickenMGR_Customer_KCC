@@ -72,10 +72,16 @@
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; padding: 8px 0; z-index: 998; box-shadow: 0 -4px 12px rgba(0,0,0,0.05); max-width: 480px; margin: auto; }
         .nav-item { text-align: center; font-size: 11px; font-weight: 700; color: #64748b; cursor: pointer; flex: 1; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .nav-item.active { color: #059669; }
-        .nav-icon { font-size: 18px; }
+        .nav-icon { width: 22px; height: 22px; object-fit: contain; }
         
-        #complaintModal, #checkoutModal, #myOrdersModal, #dynamicModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
+        #complaintModal, #checkoutModal, #myOrdersModal, #dynamicModal, #recipesModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content-box { background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center; margin: auto; }
+        
+        /* Recipe Cards Style inside Modal */
+        .recipe-card-item { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+        .recipe-card-item h4 { margin: 0 0 2px 0; font-size: 13px; color: #1e293b; font-weight: 700; }
+        .recipe-card-item p { margin: 0; font-size: 10.5px; color: #64748b; }
+        .recipe-view-btn { background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap; }
     </style>
 </head>
 <body onload="checkCustomerSetup()">
@@ -162,7 +168,7 @@
                 <button class="add-btn" onclick="openDynamicModal('Liver / Kaleji', 'rate_liver', 200)">Add to Cart</button>
             </div>
 
-            <!-- 5. Chicken Lollipop (Nayi Category) -->
+            <!-- 5. Chicken Lollipop -->
             <div class="product-card">
                 <img src="Chicken Lolipop.jfif" alt="Chicken Lollipop">
                 <div>
@@ -172,7 +178,7 @@
                 <button class="add-btn" onclick="openDynamicModal('Chicken Lollipop', 'rate_lolipop', 300)">Add to Cart</button>
             </div>
 
-            <!-- 6. Garden Cut piece (Nayi Category) -->
+            <!-- 6. Garden Cut piece -->
             <div class="product-card">
                 <img src="chciken Garden.jfif" alt="Garden Cut piece">
                 <div>
@@ -189,19 +195,83 @@
         </footer>
     </div>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (Updated with new icons and Recipe tab) -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-            <span class="nav-icon">🏠</span>
+            <img src="Home.png" alt="Home" class="nav-icon">
             <span>Home</span>
         </div>
+        <div class="nav-item" onclick="openRecipesModal()">
+            <img src="Chicken Recipe.png" alt="Recipes" class="nav-icon">
+            <span>Recipes</span>
+        </div>
         <div class="nav-item" onclick="openMyOrders()">
-            <span class="nav-icon">📦</span>
+            <img src="My Orders.png" alt="My Orders" class="nav-icon">
             <span>My Orders</span>
         </div>
     </div>
 
-    <!-- Dynamic Weight/Rupees Popup Modal (Blank inputs as requested) -->
+    <!-- Recipes Modal (New Tab Feature) -->
+    <div id="recipesModal">
+        <div class="modal-content-box" style="max-width: 380px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                <h3 style="margin: 0; color: #065f46; font-size: 16px; font-weight: 700;">📖 Easy Cooking Recipes</h3>
+                <button onclick="closeRecipesModal()" style="background: none; border: none; font-size: 16px; cursor: pointer; color: #64748b;">✕</button>
+            </div>
+            <p style="font-size: 11px; color: #64748b; margin-bottom: 14px; text-align: left;">Apne manpasand chicken dish ki recipe dekhein aur ghar par banayein:</p>
+            
+            <div style="max-height: 280px; overflow-y: auto; padding-right: 2px;">
+                <!-- 1. Lollipop -->
+                <div class="recipe-card-item">
+                    <div>
+                        <h4>🍗 Chicken Lollipop</h4>
+                        <p>Restorant style crispy lollipop (25 min)</p>
+                    </div>
+                    <button class="recipe-view-btn" onclick="window.open('Chicken  Lolipop.pdf', '_blank')">View PDF</button>
+                </div>
+
+                <!-- 2. Biryani -->
+                <div class="recipe-card-item">
+                    <div>
+                        <h4>🍛 Chicken Biryani</h4>
+                        <p>Chamchimit tasty dum biryani (45 min)</p>
+                    </div>
+                    <button class="recipe-view-btn" onclick="window.open('Chicken Biryani.pdf', '_blank')">View PDF</button>
+                </div>
+
+                <!-- 3. Dalcha -->
+                <div class="recipe-card-item">
+                    <div>
+                        <h4>🍲 Chicken Dalcha</h4>
+                        <p>Hyderabadi style khemang dalcha (40 min)</p>
+                    </div>
+                    <button class="recipe-view-btn" onclick="window.open('Chicken Dalcha.pdf', '_blank')">View PDF</button>
+                </div>
+
+                <!-- 4. Kabab -->
+                <div class="recipe-card-item">
+                    <div>
+                        <h4>🍢 Chicken Kabab</h4>
+                        <p>Juicy, smoky & crispy kabab (30 min)</p>
+                    </div>
+                    <button class="recipe-view-btn" onclick="window.open('Chicken Kabab.pdf', '_blank')">View PDF</button>
+                </div>
+
+                <!-- 5. Samosa -->
+                <div class="recipe-card-item">
+                    <div>
+                        <h4>🥟 Chicken Samosa</h4>
+                        <p>Tea-time special crispy samosa (35 min)</p>
+                    </div>
+                    <button class="recipe-view-btn" onclick="window.open('Chicken Samoasa.pdf', '_blank')">View PDF</button>
+                </div>
+            </div>
+
+            <button onclick="closeRecipesModal()" style="background: #e2e8f0; color: #475569; border: none; padding: 9px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%; margin-top: 12px;">Close</button>
+        </div>
+    </div>
+
+    <!-- Dynamic Weight/Rupees Popup Modal -->
     <div id="dynamicModal">
         <div class="modal-content-box" style="max-width: 340px;">
             <h3 id="modalProdTitle" style="margin: 0 0 4px 0; color: #1e293b; font-size: 16px; font-weight: 700;">Fresh Chicken (mix)</h3>
@@ -484,6 +554,14 @@
                 video.muted = true;
                 btn.innerHTML = "🔇 Unmute";
             }
+        }
+
+        function openRecipesModal() {
+            document.getElementById('recipesModal').style.display = 'flex';
+        }
+
+        function closeRecipesModal() {
+            document.getElementById('recipesModal').style.display = 'none';
         }
 
         function openDynamicModal(name, rateKey, defaultRate) {
