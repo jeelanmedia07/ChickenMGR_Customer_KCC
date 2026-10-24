@@ -136,6 +136,33 @@
         
         #complaintModal, #checkoutModal, #myOrdersModal, #dynamicModal, #recipesModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
         .modal-content-box { background: white; padding: 22px; border-radius: 16px; width: 90%; max-width: 350px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); text-align: center; margin: auto; }
+        
+        /* Recipe PDF Item Button Style */
+        .recipe-pdf-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .recipe-pdf-card:hover {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+        .recipe-pdf-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+        }
     </style>
 </head>
 
@@ -295,6 +322,58 @@
         </div>
     </div>
 
+    <!-- Recipes Modal (PDF Recipes List) -->
+    <div id="recipesModal">
+        <div class="modal-content-box" style="max-width: 380px; text-align: left;">
+            <h3 style="margin-top: 0; color: #059669; font-size: 17px; font-weight: 700; text-align: center;">📕 Special Chicken Recipes</h3>
+            <p style="margin: 0 0 10px 0; font-size: 11.5px; color: #64748b; text-align: center;">Recipe dekhne ke liye kisi bhi dish par click karein:</p>
+            
+            <div style="max-height: 300px; overflow-y: auto; padding-right: 2px;">
+                <a href="Chicken Biryani.pdf" target="_blank" class="recipe-pdf-card">
+                    <div class="recipe-pdf-info">
+                        <span style="font-size: 18px;">📄</span>
+                        <span>Chicken Biryani Recipe</span>
+                    </div>
+                    <span style="color: #059669; font-weight: 700; font-size: 12px;">Open ➔</span>
+                </a>
+
+                <a href="Chicken Lolipop.pdf" target="_blank" class="recipe-pdf-card">
+                    <div class="recipe-pdf-info">
+                        <span style="font-size: 18px;">📄</span>
+                        <span>Chicken Lollipop Recipe</span>
+                    </div>
+                    <span style="color: #059669; font-weight: 700; font-size: 12px;">Open ➔</span>
+                </a>
+
+                <a href="Chicken Kabab.pdf" target="_blank" class="recipe-pdf-card">
+                    <div class="recipe-pdf-info">
+                        <span style="font-size: 18px;">📄</span>
+                        <span>Chicken Kabab Recipe</span>
+                    </div>
+                    <span style="color: #059669; font-weight: 700; font-size: 12px;">Open ➔</span>
+                </a>
+
+                <a href="Chicken Dalcha.pdf" target="_blank" class="recipe-pdf-card">
+                    <div class="recipe-pdf-info">
+                        <span style="font-size: 18px;">📄</span>
+                        <span>Chicken Dalcha Recipe</span>
+                    </div>
+                    <span style="color: #059669; font-weight: 700; font-size: 12px;">Open ➔</span>
+                </a>
+
+                <a href="Chicken Samoasa.pdf" target="_blank" class="recipe-pdf-card">
+                    <div class="recipe-pdf-info">
+                        <span style="font-size: 18px;">📄</span>
+                        <span>Chicken Samosa Recipe</span>
+                    </div>
+                    <span style="color: #059669; font-weight: 700; font-size: 12px;">Open ➔</span>
+                </a>
+            </div>
+
+            <button onclick="closeRecipesModal()" style="background: #059669; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%; margin-top: 12px;">Close</button>
+        </div>
+    </div>
+
     <!-- Complaint Modal -->
     <div id="complaintModal">
         <div class="modal-content-box">
@@ -377,9 +456,11 @@
 
     <!-- My Orders Modal -->
     <div id="myOrdersModal">
-        <div class="modal-content-box">
-            <h3 style="margin-top: 0; color: #1e293b; font-size: 17px; font-weight: 700;">Active Orders</h3>
-            <div id="ordersListContainer" style="max-height: 250px; overflow-y: auto; text-align: left; margin: 10px 0;"></div>
+        <div class="modal-content-box" style="max-width: 380px;">
+            <h3 style="margin-top: 0; color: #1e293b; font-size: 17px; font-weight: 700;">📦 Aapke Active Orders</h3>
+            <div id="ordersListContainer" style="max-height: 280px; overflow-y: auto; text-align: left; margin: 10px 0;">
+                <p style="text-align: center; color: #64748b; font-size: 12px;">Orders load ho rahe hain...</p>
+            </div>
             <button onclick="closeMyOrders()" style="background: #065f46; color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: 700; font-size: 12px; cursor: pointer; width: 100%;">Close</button>
         </div>
     </div>
@@ -437,6 +518,7 @@
             document.getElementById('displaySavedName').innerText = savedName;
             document.getElementById('displaySavedPhone').innerText = savedPhone;
 
+            syncCoinsFromCloud();
             updateCoinsUI();
         }
 
@@ -600,6 +682,7 @@
 
         function openCheckoutModal() {
             let phone = localStorage.getItem('kcc_customer_phone');
+            let phoneKey = 'kcc_coins_' + phone;
             let coinsData = JSON.parse(localStorage.getItem(phoneKey) || '{"coins": 0}');
             let redeemContainer = document.getElementById('checkoutRedeemContainer');
 
@@ -699,7 +782,68 @@
             closeCheckoutModal();
         }
 
-        function openMyOrders() { document.getElementById('myOrdersModal').style.display = 'flex'; }
+        /* Recipes Modal Controls */
+        function openRecipesModal() {
+            document.getElementById('recipesModal').style.display = 'flex';
+        }
+
+        function closeRecipesModal() {
+            document.getElementById('recipesModal').style.display = 'none';
+        }
+
+        /* My Orders Modal Controls */
+        function openMyOrders() {
+            let phone = localStorage.getItem('kcc_customer_phone');
+            let container = document.getElementById('ordersListContainer');
+            container.innerHTML = `<p style="text-align: center; color: #64748b; font-size: 12px;">Checking orders...</p>`;
+            
+            document.getElementById('myOrdersModal').style.display = 'flex';
+
+            if (!phone || !window.firebaseDB) {
+                container.innerHTML = `<p style="text-align: center; color: #dc2626; font-size: 12px;">Customer phone number nahi mila!</p>`;
+                return;
+            }
+
+            const { db, ref, get } = window.firebaseDB;
+            get(ref(db, 'orders')).then((snapshot) => {
+                if (snapshot.exists()) {
+                    let allOrders = snapshot.val();
+                    let myOrdersHtml = "";
+                    let foundCount = 0;
+
+                    Object.keys(allOrders).forEach(tokenKey => {
+                        let ord = allOrders[tokenKey];
+                        if (ord.phone === phone) {
+                            foundCount++;
+                            let statusColor = ord.status === 'Completed' ? '#059669' : '#d97706';
+                            
+                            myOrdersHtml += `
+                                <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px; margin-bottom: 8px; font-size: 12px;">
+                                    <div style="display: flex; justify-content: space-between; font-weight: 700; color: #059669; margin-bottom: 4px;">
+                                        <span>Token: #${ord.token || tokenKey}</span>
+                                        <span style="background: #e2e8f0; padding: 2px 6px; border-radius: 4px; color: #334155; font-size: 10.5px;">${ord.orderType || 'Pickup'}</span>
+                                    </div>
+                                    <p style="margin: 2px 0; color: #334155;"><b>Items:</b> ${ord.items}</p>
+                                    <p style="margin: 2px 0; color: #334155;"><b>Total:</b> ₹${ord.totalAmount}</p>
+                                    <p style="margin: 2px 0;"><b>Status:</b> <span style="color: ${statusColor}; font-weight: 700;">${ord.status || 'Pending'}</span></p>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    if (foundCount > 0) {
+                        container.innerHTML = myOrdersHtml;
+                    } else {
+                        container.innerHTML = `<p style="text-align: center; color: #64748b; font-size: 12px;">Aapne abhi tak koi order nahi kiya hai.</p>`;
+                    }
+                } else {
+                    container.innerHTML = `<p style="text-align: center; color: #64748b; font-size: 12px;">Koi order database me nahi mila.</p>`;
+                }
+            }).catch((error) => {
+                container.innerHTML = `<p style="text-align: center; color: #dc2626; font-size: 12px;">Orders load karne me error aayi.</p>`;
+            });
+        }
+
         function closeMyOrders() { document.getElementById('myOrdersModal').style.display = 'none'; }
         function openComplaintModal() { document.getElementById('complaintModal').style.display = 'flex'; }
         function closeComplaintModal() { document.getElementById('complaintModal').style.display = 'none'; }
